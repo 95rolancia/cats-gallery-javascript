@@ -1,0 +1,5 @@
+{
+    "liveServer.settings.port": 5501,
+    "eslint.validate": [
+        {"language": "javascript"}
+    ],
