@@ -2,7 +2,7 @@
   "name": "cats-gallery-javascript",
   "version": "1.0.0",
   "description": "cats gallery",
-  "main": "index.js",
+  "main": "main.js",
   "dependencies": {},
   "devDependencies": {
     "eslint": "^7.21.0"
