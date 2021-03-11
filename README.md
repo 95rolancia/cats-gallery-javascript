@@ -14,3 +14,8 @@ https://95rolancia.github.io/cats-gallery-javascript
 - 폴더로 들어가기
 - 귀여운 로딩!
 - ~~파일 열기~~ cors ㅠㅠ...
+
+## 해야할 일!
+
+- breadcrumb 업데이트!
+- 스타일링 다듬기
