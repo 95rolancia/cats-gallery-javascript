@@ -5,6 +5,7 @@ export default class Nodes {
     this.loading = loading;
     this.nodes = document.querySelector(".Nodes");
     this.data = undefined;
+    this.loading.toggleSpinner();
     api.fetchRoot().then((response) => {
       if (response.isError) {
         console.error("fetchRoot failed");
@@ -12,6 +13,7 @@ export default class Nodes {
       }
       this.data = response.data;
       this.render();
+      this.loading.toggleSpinner();
     });
     this.stack = [0];
   }
