@@ -10,6 +10,19 @@ body {
   flex-direction: column;
 }
 
+img {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.spinner-wrapper {
+  position: absolute;
+  margin: auto;
+}
+
 #app {
   border: 1px solid #ccc;
   background-color: #fff;
