@@ -1,8 +1,6 @@
-const ROOT_URL =
-  "https://zl3m4qq0l9.execute-api.ap-northeast-2.amazonaws.com/dev";
+const ROOT_URL = "";
 
-const PNG_URL =
-  "https://fe-dev-matching-2021-03-serverlessdeploymentbuck-t3kpj3way537.s3.ap-northeast-2.amazonaws.com/public";
+const PNG_URL = "";
 
 const request = async (url) => {
   try {
