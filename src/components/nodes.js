@@ -6,6 +6,7 @@ export default class Nodes {
     this.nodes = document.querySelector(".Nodes");
     this.data = undefined;
     this.loading.toggleSpinner();
+
     api.fetchRoot().then((response) => {
       if (response.isError) {
         console.error("fetchRoot failed");
@@ -81,9 +82,8 @@ export default class Nodes {
 
         const img = document.createElement("img");
         img.setAttribute("src", "./public/imgs/file.png");
-        img.addEventListener("click", (e) => {
+        img.addEventListener("click", () => {
           console.log("file clicked");
-          console.log(e.target.parentNode);
           api.fetchPng(item.filePath).then((response) => {
             console.log(response);
           });

@@ -1,9 +1,11 @@
-const ROOT_URL = "";
+const ROOT_URL = "public/data/";
+const IMG_URL = "public/imgs/cats";
 
-const PNG_URL = "";
+const delay = (ms = 1000) => new Promise((r) => setTimeout(r, ms));
 
 const request = async (url) => {
   try {
+    await delay();
     const response = await fetch(url);
     if (response.ok) {
       const data = await response.json();
@@ -23,7 +25,8 @@ const request = async (url) => {
 const api = {
   fetchRoot: async () => {
     try {
-      const result = await request(ROOT_URL);
+      const result = await request(`${ROOT_URL}content.json`);
+      console.log(result);
       return {
         isError: false,
         data: result,
@@ -38,7 +41,7 @@ const api = {
 
   fetchDirectory: async (id) => {
     try {
-      const result = await request(`${ROOT_URL}/${id}`);
+      const result = await request(`${ROOT_URL}/${id}.json`);
       return {
         isError: false,
         data: result,
@@ -53,7 +56,10 @@ const api = {
 
   fetchPng: async (filePath) => {
     try {
-      const result = await request(`${PNG_URL}${filePath}`);
+      window.open(filePath);
+      console.log(filePath);
+      const result = await request(`${filePath}`);
+
       return {
         isError: false,
         data: result,
