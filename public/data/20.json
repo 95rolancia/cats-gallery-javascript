@@ -1,0 +1,11 @@
+[
+    {
+       "id":"22",
+       "name":"흰둥이",
+       "type":"FILE",
+       "filePath":"public/imgs/cats/하얀고양이1.jpg",
+       "parent":{
+          "id":"20"
+       }
+    }
+ ]

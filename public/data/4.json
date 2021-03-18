@@ -1,0 +1,11 @@
+[
+    {
+       "id":"21",
+       "name":"세숫대야",
+       "type":"FILE",
+       "filePath":"public/imgs/cats/blackCat.jpg",
+       "parent":{
+          "id":"4"
+       }
+    }
+ ]

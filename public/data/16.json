@@ -1,0 +1,11 @@
+[
+    {
+       "id":"17",
+       "name":"삼색이",
+       "type":"FILE",
+       "filePath":"public/imgs/cats/삼색이1.jpg",
+       "parent":{
+          "id":"16"
+       }
+    }
+ ]
