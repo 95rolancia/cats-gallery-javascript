@@ -5,8 +5,18 @@ export default class BreadCrumb {
     this.render();
   }
 
-  setState(next) {
-    this.path.push(next);
+  pathPop() {
+    this.path.pop();
+    return this.path;
+  }
+
+  pathPush(path) {
+    this.path.push(path);
+    return this.path;
+  }
+
+  setState(path) {
+    this.path = path;
     this.render();
   }
 

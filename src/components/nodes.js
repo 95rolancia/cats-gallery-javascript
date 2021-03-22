@@ -1,8 +1,9 @@
 import api from "../api/api.js";
 
 export default class Nodes {
-  constructor(loading) {
+  constructor(loading, breadCrumb) {
     this.loading = loading;
+    this.breadCrumb = breadCrumb;
     this.nodes = document.querySelector(".Nodes");
     this.data = undefined;
     this.loading.toggleSpinner();
@@ -34,6 +35,8 @@ export default class Nodes {
       const img = document.createElement("img");
       img.setAttribute("src", "./public/imgs/prev.png");
       img.addEventListener("click", (e) => {
+        // handling breadcrumb
+        this.breadCrumb.setState(this.breadCrumb.pathPop());
         this.stack.pop();
         this.loading.toggleSpinner();
         if (this.stack.length === 1) {
@@ -63,6 +66,8 @@ export default class Nodes {
         const img = document.createElement("img");
         img.setAttribute("src", "./public/imgs/directory.png");
         img.addEventListener("click", (e) => {
+          // Handling breadCrumb
+          this.breadCrumb.setState(this.breadCrumb.pathPush(item.name));
           this.loading.toggleSpinner();
           const id = e.target.parentNode.dataset.id;
           api.fetchDirectory(id).then((response) => {
