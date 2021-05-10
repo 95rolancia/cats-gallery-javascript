@@ -1,32 +1,23 @@
 export default class BreadCrumb {
-  constructor() {
-    this.breadCrumb = document.querySelector(".Breadcrumb");
+  constructor({ $app, initialState }) {
+    this.state = initialState;
+
+    this.$target = document.createElement("nav");
+    this.$target.className = "Breadcrumb";
+    $app.appendChild(this.$target);
     this.path = ["root"];
     this.render();
   }
 
-  pathPop() {
-    this.path.pop();
-    return this.path;
-  }
-
-  pathPush(path) {
-    this.path.push(path);
-    return this.path;
-  }
-
-  setState(path) {
-    this.path = path;
+  setState(nextState) {
+    this.state = nextState;
     this.render();
   }
 
   render() {
-    this.breadCrumb.innerHTML = "";
-    this.path.forEach((name) => {
-      const cur = document.createElement("div");
-      cur.className = name;
-      cur.textContent = name;
-      this.breadCrumb.appendChild(cur);
-    });
+    this.$target.innerHTML = `<div class="nav-item">root</div>${this.state.map((node, index) =>
+      `<div class="nav-item" data-index="${index}">${node.name}
+        </div>`.join("")
+    )}`;
   }
 }
