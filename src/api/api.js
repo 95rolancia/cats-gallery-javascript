@@ -1,56 +1,19 @@
-const ROOT_URL = "public/data/";
+const ROOT_URL = "public/data";
 const IMG_URL = "public/imgs/cats";
 
-const delay = (ms = 1000) => new Promise((r) => setTimeout(r, ms));
-
-const request = async (url) => {
-  try {
-    await delay();
-    const response = await fetch(url);
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      const errorData = await response.json();
-      throw errorData;
-    }
-  } catch (e) {
-    throw {
-      message: e.message,
-      status: e.status,
-    };
-  }
-};
+const delay = (ms = 10) => new Promise((r) => setTimeout(r, ms));
 
 const api = {
-  fetchRoot: async () => {
+  request: async (nodeId) => {
     try {
-      const result = await request(`${ROOT_URL}content.json`);
-      console.log(result);
-      return {
-        isError: false,
-        data: result,
-      };
+      await delay();
+      const res = await fetch(`${ROOT_URL}/${nodeId ? nodeId : "content"}.json`);
+      if (!res.ok) {
+        throw new Error("서버의 상태가 이상합니다!");
+      }
+      return await res.json();
     } catch (e) {
-      return {
-        isError: true,
-        data: e,
-      };
-    }
-  },
-
-  fetchDirectory: async (id) => {
-    try {
-      const result = await request(`${ROOT_URL}/${id}.json`);
-      return {
-        isError: false,
-        data: result,
-      };
-    } catch (e) {
-      return {
-        isError: true,
-        data: e,
-      };
+      throw new Error("무언가가 잘못되었습니다!", e);
     }
   },
 
@@ -58,7 +21,7 @@ const api = {
     try {
       window.open(filePath);
       console.log(filePath);
-      const result = await request(`${filePath}`);
+      const result = await fetch(`${filePath}`);
 
       return {
         isError: false,
