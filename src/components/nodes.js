@@ -1,102 +1,56 @@
-import api from "../api/api.js";
-
 export default class Nodes {
-  constructor(loading, breadCrumb) {
-    this.loading = loading;
-    this.breadCrumb = breadCrumb;
-    this.nodes = document.querySelector(".Nodes");
-    this.data = undefined;
-    this.loading.toggleSpinner();
+  constructor({ $app, initialState, onClick, onBackClick }) {
+    this.state = initialState;
 
-    api.fetchRoot().then((response) => {
-      if (response.isError) {
-        console.error("fetchRoot failed");
-        return;
+    this.onClick = onClick;
+    this.onBackClick = onBackClick;
+
+    this.$target = document.createElement("ul");
+    this.$target.className = "Nodes";
+    $app.appendChild(this.$target);
+
+    this.$target.addEventListener("click", (e) => {
+      const node = e.target.closest(".Node");
+      if (node) {
+        const { nodeId } = node.dataset;
+
+        if (!nodeId) {
+          this.onBackClick();
+          return;
+        }
+        const selectedNode = this.state.nodes.find((node) => node.id === nodeId);
+        if (selectedNode) {
+          this.onClick(selectedNode);
+        }
       }
-      this.data = response.data;
-      this.render();
-      this.loading.toggleSpinner();
     });
-    this.stack = [0];
+
+    this.render();
   }
 
-  setState(data) {
-    this.data = data;
+  setState(nextState) {
+    this.state = nextState;
     this.render();
   }
 
   render() {
-    this.nodes.innerHTML = "";
-    if (this.stack.length !== 1) {
-      const prev = document.createElement("div");
-      prev.setAttribute("class", "Node prev");
-      prev.setAttribute("data-id", this.parentId);
+    if (this.state.nodes) {
+      const nodesTemplate = this.state.nodes
+        .map((node) => {
+          const iconPath =
+            node.type === "FILE" ? "public/imgs/file.png" : "public/imgs/directory.png";
+          return `
+          <li class="Node" data-node-id="${node.id}">
+            <img src="${iconPath}">
+            <div>${node.name}</div>
+          </li>
+        `;
+        })
+        .join("");
 
-      const img = document.createElement("img");
-      img.setAttribute("src", "./public/imgs/prev.png");
-      img.addEventListener("click", (e) => {
-        // handling breadcrumb
-        this.breadCrumb.setState(this.breadCrumb.pathPop());
-        this.stack.pop();
-        this.loading.toggleSpinner();
-        if (this.stack.length === 1) {
-          api.fetchRoot().then((response) => {
-            this.setState(response.data);
-            this.loading.toggleSpinner();
-          });
-        } else {
-          api
-            .fetchDirectory(this.stack[this.stack.length - 1])
-            .then((response) => {
-              this.setState(response.data);
-              this.loading.toggleSpinner();
-            });
-        }
-      });
-      prev.appendChild(img);
-      this.nodes.appendChild(prev);
+      this.$target.innerHTML = !this.state.isRoot
+        ? `<li class="Node"><img src="public/imgs/prev.png"></li>${nodesTemplate}`
+        : nodesTemplate;
     }
-
-    this.data.forEach((item) => {
-      if (item.type === "DIRECTORY") {
-        const content = document.createElement("div");
-        content.setAttribute("class", "Node directory");
-        content.setAttribute("data-id", item.id);
-
-        const img = document.createElement("img");
-        img.setAttribute("src", "./public/imgs/directory.png");
-        img.addEventListener("click", (e) => {
-          // Handling breadCrumb
-          this.breadCrumb.setState(this.breadCrumb.pathPush(item.name));
-          this.loading.toggleSpinner();
-          const id = e.target.parentNode.dataset.id;
-          api.fetchDirectory(id).then((response) => {
-            this.stack.push(item.id);
-            this.setState(response.data);
-            this.loading.toggleSpinner();
-          });
-        });
-        content.appendChild(img);
-        content.insertAdjacentHTML("beforeend", `<div>${item.name}</div>`);
-        this.nodes.appendChild(content);
-      } else {
-        const content = document.createElement("div");
-        content.setAttribute("class", "Node file");
-        content.setAttribute("data-id", item.id);
-        content.setAttribute("data-img", item.filePath);
-
-        const img = document.createElement("img");
-        img.setAttribute("src", "./public/imgs/file.png");
-        img.addEventListener("click", () => {
-          console.log("file clicked");
-          api.fetchPng(item.filePath).then((response) => {
-            console.log(response);
-          });
-        });
-        content.appendChild(img);
-        content.insertAdjacentHTML("beforeend", `<div>${item.name}</div>`);
-        this.nodes.appendChild(content);
-      }
-    });
   }
 }
