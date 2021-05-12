@@ -36,6 +36,7 @@ img {
   flex-direction: row;
   justify-content: flex-start;
   flex-wrap: wrap;
+  padding-left: 0;
 }
 
 .Node {
