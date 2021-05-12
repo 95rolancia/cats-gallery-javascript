@@ -5,7 +5,7 @@ export default class BreadCrumb {
     this.$target = document.createElement("nav");
     this.$target.className = "Breadcrumb";
     $app.appendChild(this.$target);
-    this.path = ["root"];
+
     this.render();
   }
 
@@ -15,9 +15,12 @@ export default class BreadCrumb {
   }
 
   render() {
-    this.$target.innerHTML = `<div class="nav-item">root</div>${this.state.map((node, index) =>
-      `<div class="nav-item" data-index="${index}">${node.name}
-        </div>`.join("")
-    )}`;
+    this.$target.innerHTML = `<div class="nav-item">root</div>${this.state
+      .map(
+        (node, index) =>
+          `<div class="nav-item" data-index="${index}">${node.name}
+        </div>`
+      )
+      .join("")}`;
   }
 }
