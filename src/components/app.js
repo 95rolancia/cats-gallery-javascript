@@ -3,6 +3,8 @@ import Nodes from "./nodes.js";
 import Loading from "../utils/loading.js";
 import ImageView from "./imageview.js";
 
+const cache = {};
+
 export default class App {
   constructor($app, api) {
     this.api = api;
@@ -38,11 +40,11 @@ export default class App {
     this.state = nextState;
     this.breadCrumb.setState(this.state.depth);
     this.nodes.setState({
-      ...this.state,
+      isRoot: this.state.isRoot,
+      nodes: this.state.nodes,
     });
     this.imageView.setState(this.state.selectedFilePath);
     this.loading.setState(this.state.isLoading);
-    console.log("app\n", this.state);
   }
 
   async onClick(node) {
@@ -53,13 +55,14 @@ export default class App {
 
     try {
       if (node.type === "DIRECTORY") {
-        const nextNodes = await this.api.request(node.id);
+        const nextNodes = cache[node.id] ? cache[node.id] : await this.api.request(node.id);
         this.setState({
           ...this.state,
           depth: [...this.state.depth, node],
           isRoot: false,
           nodes: nextNodes,
         });
+        cache[node.id] = nextNodes;
       } else if (node.type === "FILE") {
         this.setState({
           ...this.state,
@@ -90,14 +93,16 @@ export default class App {
         nextState.depth.length === 0 ? null : nextState.depth[nextState.depth.length - 1].id;
 
       if (prevNodeId === null) {
-        const rootNodes = await this.api.request();
+        const rootNodes = cache.root ? cache.root : await this.api.request();
         this.setState({
           ...nextState,
           isRoot: true,
           nodes: rootNodes,
         });
       } else {
-        const prevNodes = await this.api.request(prevNodeId);
+        const prevNodes = cache[prevNodeId]
+          ? cache[prevNodeId]
+          : await this.api.request(prevNodeId);
         this.setState({
           ...nextState,
           isRoot: false,
@@ -134,6 +139,7 @@ export default class App {
         isRoot: true,
         nodes: rootNodes,
       });
+      cache.root = rootNodes;
       console.log("first init\n", this.state);
     } catch (err) {
       console.error(err);
