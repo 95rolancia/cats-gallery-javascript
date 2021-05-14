@@ -6,7 +6,7 @@ import ImageView from "./imageview.js";
 const cache = {};
 
 export default class App {
-  constructor($app, api) {
+  constructor({ $app, api }) {
     this.api = api;
     this.state = {
       isRoot: true,
