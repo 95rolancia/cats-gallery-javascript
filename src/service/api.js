@@ -1,5 +1,5 @@
 const API_END_POINT = "public/data";
-const delay = (ms = 10) => new Promise((r) => setTimeout(r, ms));
+const delay = (ms = 500) => new Promise((r) => setTimeout(r, ms));
 
 export default class Api {
   async request(nodeId) {
