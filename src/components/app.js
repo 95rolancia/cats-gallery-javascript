@@ -1,16 +1,18 @@
 import BreadCrumb from "./breadcrumb.js";
 import Nodes from "./nodes.js";
 import Loading from "../utils/loading.js";
-import Api from "../api/api.js";
+import ImageView from "./imageview.js";
 
 export default class App {
-  constructor($app) {
+  constructor($app, api) {
+    this.api = api;
     this.state = {
-      isRoot: false,
+      isRoot: true,
       nodes: [],
       depth: [],
+      selectedFilePath: null,
+      isLoading: false,
     };
-    this.loading = new Loading();
     this.breadCrumb = new BreadCrumb({
       $app,
       initialState: this.state.depth,
@@ -23,6 +25,12 @@ export default class App {
       onBackClick: () => this.onBackClick(),
       Loading,
     });
+    this.imageView = new ImageView({
+      $app,
+      initialState: this.state.selectedFilePath,
+      onCloseClick: () => this.onCloseClick(),
+    });
+    this.loading = new Loading({ $app, initialState: this.state.isLoading });
     this.init();
   }
 
@@ -32,53 +40,108 @@ export default class App {
     this.nodes.setState({
       ...this.state,
     });
+    this.imageView.setState(this.state.selectedFilePath);
+    this.loading.setState(this.state.isLoading);
     console.log("app\n", this.state);
   }
 
   async onClick(node) {
-    if (node.type === "DIRECTORY") {
-      const nextNodes = await Api.request(node.id);
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
+
+    try {
+      if (node.type === "DIRECTORY") {
+        const nextNodes = await this.api.request(node.id);
+        this.setState({
+          ...this.state,
+          depth: [...this.state.depth, node],
+          isRoot: false,
+          nodes: nextNodes,
+        });
+      } else if (node.type === "FILE") {
+        this.setState({
+          ...this.state,
+          selectedFilePath: node.filePath,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
       this.setState({
-        depth: [...this.state.depth, node],
-        isRoot: false,
-        nodes: nextNodes,
+        ...this.state,
+        isLoading: false,
       });
-    } else if (node.type === "FILE") {
-      console.log("file");
     }
   }
 
   async onBackClick() {
-    const nextState = { ...this.state };
-    nextState.depth.pop();
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
 
-    const prevNodeId =
-      nextState.depth.length === 0 ? null : nextState.depth[nextState.depth.length - 1].id;
+    try {
+      const nextState = { ...this.state };
+      nextState.depth.pop();
 
-    if (prevNodeId === null) {
-      const rootNodes = await Api.request();
+      const prevNodeId =
+        nextState.depth.length === 0 ? null : nextState.depth[nextState.depth.length - 1].id;
+
+      if (prevNodeId === null) {
+        const rootNodes = await this.api.request();
+        this.setState({
+          ...nextState,
+          isRoot: true,
+          nodes: rootNodes,
+        });
+      } else {
+        const prevNodes = await this.api.request(prevNodeId);
+        this.setState({
+          ...nextState,
+          isRoot: false,
+          nodes: prevNodes,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
       this.setState({
-        ...nextState,
-        isRoot: true,
-        nodes: rootNodes,
-      });
-    } else {
-      const prevNodes = await Api.request(prevNodeId);
-      this.setState({
-        ...nextState,
-        isRoot: false,
-        nodes: prevNodes,
+        ...this.state,
+        isLoading: false,
       });
     }
   }
 
-  async init() {
-    const rootNodes = await Api.request();
+  onCloseClick() {
     this.setState({
       ...this.state,
-      isRoot: true,
-      nodes: rootNodes,
+      selectedFilePath: null,
     });
-    console.log("first init\n", this.state);
+  }
+
+  async init() {
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
+
+    try {
+      const rootNodes = await this.api.request();
+      this.setState({
+        ...this.state,
+        isRoot: true,
+        nodes: rootNodes,
+      });
+      console.log("first init\n", this.state);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.setState({
+        ...this.state,
+        isLoading: false,
+      });
+    }
   }
 }
