@@ -18,6 +18,7 @@ export default class App {
     this.breadCrumb = new BreadCrumb({
       $app,
       initialState: this.state.depth,
+      onNavClick: (index) => this.onNavClick(index),
     });
     this.nodes = new Nodes({
       $app,
@@ -123,6 +124,30 @@ export default class App {
     this.setState({
       ...this.state,
       selectedFilePath: null,
+    });
+  }
+
+  onNavClick(index) {
+    if (index === null) {
+      this.setState({
+        ...this.state,
+        depth: [],
+        isRoot: true,
+        nodes: cache.root,
+      });
+      return;
+    }
+
+    if (index === this.state.depth.length - 1) {
+      return;
+    }
+
+    const nextState = { ...this.state };
+    const nextDepth = this.state.depth.slice(0, index + 1);
+    this.setState({
+      ...nextState,
+      depth: nextDepth,
+      nodes: cache[nextDepth[nextDepth.length - 1].id],
     });
   }
 

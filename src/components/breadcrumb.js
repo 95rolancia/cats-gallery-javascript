@@ -1,12 +1,21 @@
 export default class BreadCrumb {
-  constructor({ $app, initialState }) {
+  constructor({ $app, initialState, onNavClick }) {
     this.state = initialState;
+    this.onNavClick = onNavClick;
 
     this.$target = document.createElement("nav");
     this.$target.className = "Breadcrumb";
     $app.appendChild(this.$target);
 
     this.render();
+
+    this.$target.addEventListener("click", (e) => {
+      const $navItem = e.target.closest(".nav-item");
+      if ($navItem) {
+        const { index } = $navItem.dataset;
+        this.onNavClick(index ? index : null);
+      }
+    });
   }
 
   setState(nextState) {
